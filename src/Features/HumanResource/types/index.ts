@@ -9,3 +9,16 @@ export interface IEmployeePerformance {
   noteBy: string;
   updatedBy: string;
 }
+
+export type PaymentType = "Bank Transfer" | "Check" | "Cash" | "Credit Card";
+export interface EmployeeSalary {
+  id?: string;
+  employeeId: string;
+  managePerformance: string;
+  totalSalary: string;
+  workingHour: string;
+  workingPeriod: string;
+  paymentType: PaymentType;
+  date: string;
+  paidBy: string;
+}
