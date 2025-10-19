@@ -31,10 +31,21 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { calculateStay, convertTo12HourFormat } from "../../utils/attendance";
-import { employees } from "../../data/AttendanceListData";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { format } from "date-fns";
+import { CalendarIcon } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  calculateStay,
+  convertTo12HourFormat,
+} from "@/Features/HumanResource/utils/attendance";
+import { employees } from "@/Features/HumanResource/data/AttendanceListData";
 
-const formSchema = z.object({
+const addSingleCheckInSchema = z.object({
   name: z.string().min(1, "Employee name is required"),
   employeeId: z.string().min(1, "Employee ID is required"),
   date: z.string().min(1, "Date is required"),
@@ -47,8 +58,8 @@ const AddSingleCheckInDialog = () => {
   const dispatch = useDispatch();
   const today = new Date().toISOString().split("T")[0];
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof addSingleCheckInSchema>>({
+    resolver: zodResolver(addSingleCheckInSchema),
     defaultValues: {
       name: "",
       employeeId: "",
@@ -58,25 +69,29 @@ const AddSingleCheckInDialog = () => {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    const checkIn12 = convertTo12HourFormat(values.checkIn);
-    const checkOut12 = values.checkOut
-      ? convertTo12HourFormat(values.checkOut)
-      : undefined;
-    const stay = calculateStay(values.checkIn, values.checkOut);
+  const onSubmit = async (values: z.infer<typeof addSingleCheckInSchema>) => {
+    try {
+      const checkIn12 = convertTo12HourFormat(values.checkIn);
+      const checkOut12 = values.checkOut
+        ? convertTo12HourFormat(values.checkOut)
+        : undefined;
+      const stay = calculateStay(values.checkIn, values.checkOut);
 
-    dispatch(
-      addAttendance({
-        ...values,
-        checkIn: checkIn12,
-        checkOut: checkOut12,
-        stay,
-      })
-    );
+      dispatch(
+        addAttendance({
+          ...values,
+          checkIn: checkIn12,
+          checkOut: checkOut12,
+          stay,
+        })
+      );
 
-    setIsOpen(false);
-    form.reset({ ...form.getValues(), date: today });
-  }
+      setIsOpen(false);
+      form.reset({ ...form.getValues(), date: today });
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -178,11 +193,42 @@ const AddSingleCheckInDialog = () => {
                 control={form.control}
                 name="date"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem className="flex flex-col">
                     <FormLabel>Date</FormLabel>
-                    <FormControl>
-                      <Input type="date" {...field} />
-                    </FormControl>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant={"outline"}
+                            className={`w-full justify-start text-left font-normal ${
+                              !field.value && "text-muted-foreground"
+                            }`}
+                          >
+                            {field.value ? (
+                              format(new Date(field.value), "PPP")
+                            ) : (
+                              <span>Pick a date</span>
+                            )}
+                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={
+                            field.value ? new Date(field.value) : undefined
+                          }
+                          onSelect={(date) =>
+                            field.onChange(
+                              date ? format(date, "yyyy-MM-dd") : ""
+                            )
+                          }
+                          disabled={(date) => date > new Date()}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
                     <FormMessage />
                   </FormItem>
                 )}

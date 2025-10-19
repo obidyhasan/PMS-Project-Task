@@ -1,15 +1,18 @@
-// import EmployeePerformance from "./Features/HumanResource/Pages/Employee/EmployeePerformance";
-
-import Attendance from "./Features/HumanResource/Pages/Attendance/Attendance";
-
-// import ManageEmployeeSalary from "./Features/HumanResource/Pages/Employee/ManageEmployeeSalary";
+import { Link, Outlet } from "react-router";
 
 function App() {
   return (
     <div className="min-h-svh">
-      {/* <EmployeePerformance /> */}
-      {/* <ManageEmployeeSalary /> */}
-      <Attendance />
+      <nav className="flex items-center justify-center gap-8 border-b flex-wrap p-4 underline">
+        <Link className="" to={"/"}>
+          Employee Performance
+        </Link>
+        <Link to={"/manage-employee"}>Manage Employee Salary</Link>
+        <Link to={"/attendance"}>Attendance</Link>
+        <Link to={"/attendance-report"}>Attendance Reports</Link>
+      </nav>
+
+      <Outlet />
     </div>
   );
 }

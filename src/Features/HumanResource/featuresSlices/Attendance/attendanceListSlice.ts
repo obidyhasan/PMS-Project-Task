@@ -9,10 +9,12 @@ const generateId = (): string => {
 
 interface AttendanceState {
   attendances: Attendance[];
+  searchQuery: string;
 }
 
 const initialState: AttendanceState = {
   attendances: AttendanceData,
+  searchQuery: "",
 };
 
 const attendanceSlice = createSlice({
@@ -47,6 +49,10 @@ const attendanceSlice = createSlice({
     setAttendances: (state, action: PayloadAction<Attendance[]>) => {
       state.attendances = action.payload;
     },
+
+    setSearchQuery: (state, action: PayloadAction<string>) => {
+      state.searchQuery = action.payload;
+    },
   },
 });
 
@@ -55,10 +61,20 @@ export const {
   updateAttendance,
   deleteAttendance,
   setAttendances,
+  setSearchQuery,
 } = attendanceSlice.actions;
 
-export const selectAttendances = (state: RootState) =>
-  state.attendance.attendances;
+export const selectAttendances = (state: RootState) => {
+  const { attendances, searchQuery } = state.attendance;
+  if (!searchQuery) return attendances;
+
+  const query = searchQuery.toLowerCase();
+  return attendances.filter(
+    (item) =>
+      item.name.toLowerCase().includes(query) ||
+      item.employeeId.toLowerCase().includes(query)
+  );
+};
 
 export const selectAttendanceById = (state: RootState, id: string) =>
   state.attendance.attendances.find((item) => item.id === id) ?? null;

@@ -1,4 +1,4 @@
-import EmployeeSalaryTable from "../../Components/Employee/EmployeeSalaryTable";
+import EmployeeSalaryTable from "../../Components/Employee/ManageSalary/EmployeeSalaryTable";
 
 const ManageEmployeeSalary = () => {
   return (

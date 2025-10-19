@@ -5,10 +5,12 @@ import type { RootState } from "@/Redux/store";
 
 interface EmployeeSalaryState {
   salaries: EmployeeSalary[];
+  searchQuery: string;
 }
 
 const initialState: EmployeeSalaryState = {
   salaries: EmployeeSalaries,
+  searchQuery: "",
 };
 
 const employeeSalarySlice = createSlice({
@@ -30,12 +32,24 @@ const employeeSalarySlice = createSlice({
         state.salaries[index] = { ...state.salaries[index], ...updatedData };
       }
     },
+    setEmployeeSalarySearchQuery: (state, action: PayloadAction<string>) => {
+      state.searchQuery = action.payload;
+    },
   },
 });
 
-export const { updateSalary } = employeeSalarySlice.actions;
+export const { updateSalary, setEmployeeSalarySearchQuery } =
+  employeeSalarySlice.actions;
 
 export const selectEmployeeSalaries = (state: RootState) =>
-  state.employeeSalary.salaries;
+  state.employeeSalary.salaries.filter(
+    (salary) =>
+      salary.paidBy
+        .toLowerCase()
+        .includes(state.employeeSalary.searchQuery.toLowerCase()) ||
+      salary.employeeId
+        .toLowerCase()
+        .includes(state.employeeSalary.searchQuery.toLowerCase())
+  );
 
 export default employeeSalarySlice.reducer;

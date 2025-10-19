@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
-import AddPerformanceDialog from "../../Components/Employee/AddPerformanceDialog";
+import AddPerformanceDialog from "../../Components/Employee/Performance/AddPerformanceDialog";
 import { useState } from "react";
-import EmployeePerformanceTable from "../../Components/Employee/EmployeePerformanceTable";
+import EmployeePerformanceTable from "../../Components/Employee/Performance/EmployeePerformanceTable";
 
 const EmployeePerformance = () => {
   const [isManageEnable, setIsManageEnable] = useState(false);

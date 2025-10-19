@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
-import AttendanceListTable from "../../Components/Attendance/AttendanceListTable";
 import { useState } from "react";
-import AddSingleCheckInDialog from "../../Components/Attendance/AddSingleCheckInDialog";
+import AddSingleCheckInDialog from "../../Components/Attendance/ManageAttendance/AddSingleCheckInDialog";
+import AttendanceListTable from "../../Components/Attendance/ManageAttendance/AttendanceListTable";
 
 const Attendance = () => {
   const [isManageEnable, setIsManageEnable] = useState(false);

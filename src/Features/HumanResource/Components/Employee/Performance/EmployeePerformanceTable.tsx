@@ -9,11 +9,11 @@ import {
 } from "@/components/ui/table";
 import { MdModeEdit } from "react-icons/md";
 import { useSelector } from "react-redux";
-import { selectEmployeePerformances } from "../../featuresSlices/Employee/employeeSlice";
+import { selectEmployeePerformances } from "../../../featuresSlices/Employee/employeeSlice";
 import DeletePerformanceDialog from "./DeletePerformanceDialog";
 import EditPerformanceDialog from "./EditPerformanceDialog";
 import { useState } from "react";
-import type { IEmployeePerformance } from "../../types";
+import type { IEmployeePerformance } from "../../../types";
 import { Badge } from "@/components/ui/badge";
 
 interface EmployeePerformanceTableProps {
@@ -46,8 +46,9 @@ const EmployeePerformanceTable = ({
             {isManageEnable && <TableHead>Action</TableHead>}
           </TableRow>
         </TableHeader>
+
         <TableBody>
-          {performances.map((p, idx) => (
+          {performances?.map((p, idx) => (
             <TableRow key={p.id}>
               <TableCell className="py-4">{idx + 1}</TableCell>
               <TableCell>{p?.managePerformance}</TableCell>
@@ -79,6 +80,12 @@ const EmployeePerformanceTable = ({
           ))}
         </TableBody>
       </Table>
+
+      {performances?.length === 0 && (
+        <div className="text-center text-sm p-2 bg-muted">
+          <span>No data available in table</span>
+        </div>
+      )}
 
       {selectedPerformance && (
         <EditPerformanceDialog

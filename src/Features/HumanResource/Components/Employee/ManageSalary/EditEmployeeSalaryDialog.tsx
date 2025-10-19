@@ -29,12 +29,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { format } from "date-fns";
 
-import type { EmployeeSalary } from "../../types";
 import { useDispatch } from "react-redux";
-import { updateSalary } from "../../featuresSlices/Employee/employeeSalarySlice"; // your redux action
+import { updateSalary } from "@/Features/HumanResource/featuresSlices/Employee/employeeSalarySlice";
+import type { EmployeeSalary } from "@/Features/HumanResource/types";
+import { CalendarIcon } from "lucide-react";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
 
-const salarySchema = z.object({
+const manageSalarySchema = z.object({
   employeeId: z.string().min(1, "Employee ID is required"),
   totalSalary: z.string().min(1, "Total Salary is required"),
   workingHour: z.string().min(1, "Working hours is required"),
@@ -59,8 +67,8 @@ export const EditEmployeeSalaryDialog = ({
 }: EditSalaryDialogProps) => {
   const dispatch = useDispatch();
 
-  const form = useForm<z.infer<typeof salarySchema>>({
-    resolver: zodResolver(salarySchema),
+  const form = useForm<z.infer<typeof manageSalarySchema>>({
+    resolver: zodResolver(manageSalarySchema),
     defaultValues: {
       ...salary,
       paymentType:
@@ -76,14 +84,18 @@ export const EditEmployeeSalaryDialog = ({
     form.reset(salary);
   }, [salary, form]);
 
-  const onSubmit = (values: z.infer<typeof salarySchema>) => {
-    dispatch(
-      updateSalary({
-        employeeId: salary.employeeId,
-        updatedData: values,
-      })
-    );
-    onClose();
+  const onSubmit = async (values: z.infer<typeof manageSalarySchema>) => {
+    try {
+      dispatch(
+        updateSalary({
+          employeeId: salary.employeeId,
+          updatedData: values,
+        })
+      );
+      onClose();
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -197,11 +209,40 @@ export const EditEmployeeSalaryDialog = ({
               control={form.control}
               name="date"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="flex flex-col">
                   <FormLabel>Date</FormLabel>
-                  <FormControl>
-                    <Input type="date" {...field} />
-                  </FormControl>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant={"outline"}
+                          className={`w-full justify-start text-left font-normal ${
+                            !field.value && "text-muted-foreground"
+                          }`}
+                        >
+                          {field.value ? (
+                            format(new Date(field.value), "PPP")
+                          ) : (
+                            <span>Pick a date</span>
+                          )}
+                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={
+                          field.value ? new Date(field.value) : undefined
+                        }
+                        onSelect={(date) =>
+                          field.onChange(date ? format(date, "yyyy-MM-dd") : "")
+                        }
+                        disabled={(date) => date > new Date()}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
                   <FormMessage />
                 </FormItem>
               )}

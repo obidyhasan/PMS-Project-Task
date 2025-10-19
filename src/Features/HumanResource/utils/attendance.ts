@@ -31,3 +31,23 @@ export const calculateStay = (checkIn: string, checkOut?: string) => {
   const mins = diff % 60;
   return `${hours}h${mins > 0 ? ` ${mins}m` : ""}`;
 };
+
+// Sorting
+export const sortByKey = <T>(
+  data: T[],
+  key: keyof T,
+  direction: "asc" | "desc" = "asc"
+): T[] => {
+  return [...data].sort((a, b) => {
+    const aValue = a[key];
+    const bValue = b[key];
+
+    if (typeof aValue === "number" && typeof bValue === "number") {
+      return direction === "asc" ? aValue - bValue : bValue - aValue;
+    }
+
+    return direction === "asc"
+      ? String(aValue).localeCompare(String(bValue))
+      : String(bValue).localeCompare(String(aValue));
+  });
+};

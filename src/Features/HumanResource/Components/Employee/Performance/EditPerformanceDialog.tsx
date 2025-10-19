@@ -30,11 +30,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { IEmployeePerformance } from "../../types";
 import { useDispatch } from "react-redux";
-import { editPerformance } from "../../featuresSlices/Employee/employeeSlice"; // your redux action
+import { editPerformance } from "@/Features/HumanResource/featuresSlices/Employee/employeeSlice";
+import type { IEmployeePerformance } from "@/Features/HumanResource/types";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { format } from "date-fns";
+import { CalendarIcon } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
 
-const formSchema = z.object({
+const editPerformanceSchema = z.object({
   managePerformance: z.string().min(1, "Performance type is required"),
   employeeId: z.string().min(1, "Employee ID is required"),
   note: z.string().min(1, "Note is required"),
@@ -60,8 +68,8 @@ export const EditPerformanceDialog = ({
 }: EditPerformanceDialogProps) => {
   const dispatch = useDispatch();
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof editPerformanceSchema>>({
+    resolver: zodResolver(editPerformanceSchema),
     defaultValues: performance,
   });
 
@@ -69,15 +77,19 @@ export const EditPerformanceDialog = ({
     form.reset(performance);
   }, [performance, form]);
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    dispatch(
-      editPerformance({
-        ...performance,
-        ...values,
-        updatedBy: "Jane Doe (HR)",
-      })
-    );
-    onClose();
+  const onSubmit = async (values: z.infer<typeof editPerformanceSchema>) => {
+    try {
+      dispatch(
+        editPerformance({
+          ...performance,
+          ...values,
+          updatedBy: "Jane Doe (HR)",
+        })
+      );
+      onClose();
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -138,11 +150,42 @@ export const EditPerformanceDialog = ({
                 control={form.control}
                 name="date"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem className="flex flex-col">
                     <FormLabel>Date</FormLabel>
-                    <FormControl>
-                      <Input type="date" {...field} />
-                    </FormControl>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant={"outline"}
+                            className={`w-full justify-start text-left font-normal ${
+                              !field.value && "text-muted-foreground"
+                            }`}
+                          >
+                            {field.value ? (
+                              format(new Date(field.value), "PPP")
+                            ) : (
+                              <span>Pick a date</span>
+                            )}
+                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={
+                            field.value ? new Date(field.value) : undefined
+                          }
+                          onSelect={(date) =>
+                            field.onChange(
+                              date ? format(date, "yyyy-MM-dd") : ""
+                            )
+                          }
+                          disabled={(date) => date > new Date()}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
                     <FormMessage />
                   </FormItem>
                 )}

@@ -33,6 +33,14 @@ import { addPerformance } from "@/Features/HumanResource/featuresSlices/Employee
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useState } from "react";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
+import { Calendar } from "@/components/ui/calendar";
 
 const formSchema = z.object({
   managePerformance: z.string().min(1, "Performance type is required"),
@@ -63,17 +71,21 @@ const AddPerformanceDialog = () => {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    dispatch(
-      addPerformance({
-        ...values,
-        noteBy: values.noteBy || "Jane Doe (HR)",
-        updatedBy: values.updatedBy || "Jane Doe (HR)",
-      })
-    );
-    setIsOpen(false);
-    form.reset();
-  }
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    try {
+      dispatch(
+        addPerformance({
+          ...values,
+          noteBy: values.noteBy || "Jane Doe (HR)",
+          updatedBy: values.updatedBy || "Jane Doe (HR)",
+        })
+      );
+      setIsOpen(false);
+      form.reset();
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -128,7 +140,6 @@ const AddPerformanceDialog = () => {
                           <SelectItem value="EMP-045">EMP-045</SelectItem>
                           <SelectItem value="EMP-112">EMP-112</SelectItem>
                           <SelectItem value="EMP-078">EMP-078</SelectItem>
-                          {/* Add more options here */}
                         </SelectContent>
                       </Select>
                     </FormControl>
@@ -142,11 +153,42 @@ const AddPerformanceDialog = () => {
                   control={form.control}
                   name="date"
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className="flex flex-col">
                       <FormLabel>Date</FormLabel>
-                      <FormControl>
-                        <Input type="date" {...field} />
-                      </FormControl>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              variant={"outline"}
+                              className={`w-full justify-start text-left font-normal ${
+                                !field.value && "text-muted-foreground"
+                              }`}
+                            >
+                              {field.value ? (
+                                format(new Date(field.value), "PPP")
+                              ) : (
+                                <span>Pick a date</span>
+                              )}
+                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={
+                              field.value ? new Date(field.value) : undefined
+                            }
+                            onSelect={(date) =>
+                              field.onChange(
+                                date ? format(date, "yyyy-MM-dd") : ""
+                              )
+                            }
+                            disabled={(date) => date > new Date()}
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
                       <FormMessage />
                     </FormItem>
                   )}

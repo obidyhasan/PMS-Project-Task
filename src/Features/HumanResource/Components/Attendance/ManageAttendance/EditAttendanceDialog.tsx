@@ -31,13 +31,22 @@ import {
 } from "@/components/ui/select";
 import { useDispatch } from "react-redux";
 import { updateAttendance } from "@/Features/HumanResource/featuresSlices/Attendance/attendanceListSlice";
-import type { Attendance } from "../../types";
+
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { format } from "date-fns";
+import { CalendarIcon } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
+import type { Attendance } from "@/Features/HumanResource/types";
 import {
   calculateStay,
   convertTo12HourFormat,
   to24HourFormat,
-} from "../../utils/attendance";
-import { employees } from "../../data/AttendanceListData";
+} from "@/Features/HumanResource/utils/attendance";
+import { employees } from "@/Features/HumanResource/data/AttendanceListData";
 
 const formSchema = z.object({
   name: z.string().min(1, "Employee name is required"),
@@ -59,7 +68,6 @@ export const EditAttendanceDialog = ({
   attendance,
 }: EditAttendanceDialogProps) => {
   const dispatch = useDispatch();
-
   const today = new Date().toISOString().split("T")[0];
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -83,25 +91,29 @@ export const EditAttendanceDialog = ({
     });
   }, [attendance, form, today]);
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    const checkIn12 = convertTo12HourFormat(values.checkIn);
-    const checkOut12 = values.checkOut
-      ? convertTo12HourFormat(values.checkOut)
-      : undefined;
-    const stay = calculateStay(values.checkIn, values.checkOut);
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    try {
+      const checkIn12 = convertTo12HourFormat(values.checkIn);
+      const checkOut12 = values.checkOut
+        ? convertTo12HourFormat(values.checkOut)
+        : undefined;
+      const stay = calculateStay(values.checkIn, values.checkOut);
 
-    dispatch(
-      updateAttendance({
-        id: attendance.id as string,
-        updatedData: {
-          ...values,
-          checkIn: checkIn12,
-          checkOut: checkOut12,
-          stay,
-        },
-      })
-    );
-    onClose();
+      dispatch(
+        updateAttendance({
+          id: attendance.id as string,
+          updatedData: {
+            ...values,
+            checkIn: checkIn12,
+            checkOut: checkOut12,
+            stay,
+          },
+        })
+      );
+      onClose();
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -200,11 +212,40 @@ export const EditAttendanceDialog = ({
               control={form.control}
               name="date"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="flex flex-col">
                   <FormLabel>Date</FormLabel>
-                  <FormControl>
-                    <Input type="date" {...field} defaultValue={today} />
-                  </FormControl>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant={"outline"}
+                          className={`w-full justify-start text-left font-normal ${
+                            !field.value && "text-muted-foreground"
+                          }`}
+                        >
+                          {field.value ? (
+                            format(new Date(field.value), "PPP")
+                          ) : (
+                            <span>Pick a date</span>
+                          )}
+                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={
+                          field.value ? new Date(field.value) : undefined
+                        }
+                        onSelect={(date) =>
+                          field.onChange(date ? format(date, "yyyy-MM-dd") : "")
+                        }
+                        disabled={(date) => date > new Date()}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
                   <FormMessage />
                 </FormItem>
               )}

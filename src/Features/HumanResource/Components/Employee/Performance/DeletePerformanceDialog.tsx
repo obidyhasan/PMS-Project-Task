@@ -12,7 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { MdDeleteOutline } from "react-icons/md";
 import { useAppDispatch } from "@/Redux/hooks";
-import { deletePerformance } from "../../featuresSlices/Employee/employeeSlice";
+import { deletePerformance } from "@/Features/HumanResource/featuresSlices/Employee/employeeSlice";
 
 const DeletePerformanceDialog = ({ id }: { id: string }) => {
   const dispatch = useAppDispatch();

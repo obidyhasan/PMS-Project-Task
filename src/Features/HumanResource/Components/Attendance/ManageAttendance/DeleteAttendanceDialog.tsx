@@ -12,7 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { MdDeleteOutline } from "react-icons/md";
 import { useAppDispatch } from "@/Redux/hooks";
-import { deleteAttendance } from "../../featuresSlices/Attendance/attendanceListSlice";
+import { deleteAttendance } from "@/Features/HumanResource/featuresSlices/Attendance/attendanceListSlice";
 
 const DeleteAttendanceDialog = ({ id }: { id: string }) => {
   const dispatch = useAppDispatch();
