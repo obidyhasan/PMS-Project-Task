@@ -22,3 +22,13 @@ export interface EmployeeSalary {
   date: string;
   paidBy: string;
 }
+
+export interface Attendance {
+  id?: string;
+  name: string;
+  employeeId: string;
+  date: string;
+  checkIn: string;
+  checkOut?: string;
+  stay?: string;
+}

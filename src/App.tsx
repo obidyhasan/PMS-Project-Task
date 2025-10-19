@@ -1,12 +1,15 @@
 // import EmployeePerformance from "./Features/HumanResource/Pages/Employee/EmployeePerformance";
 
-import ManageEmployeeSalary from "./Features/HumanResource/Pages/Employee/ManageEmployeeSalary";
+import Attendance from "./Features/HumanResource/Pages/Attendance/Attendance";
+
+// import ManageEmployeeSalary from "./Features/HumanResource/Pages/Employee/ManageEmployeeSalary";
 
 function App() {
   return (
     <div className="min-h-svh">
       {/* <EmployeePerformance /> */}
-      <ManageEmployeeSalary />
+      {/* <ManageEmployeeSalary /> */}
+      <Attendance />
     </div>
   );
 }
