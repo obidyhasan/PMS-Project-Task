@@ -11,6 +11,7 @@ function App() {
         <Link to={"/attendance"}>Attendance</Link>
         <Link to={"/attendance-report"}>Attendance Reports</Link>
         <Link to={"/new-award"}>New Award</Link>
+        <Link to={"/leave-application"}>Leave Application</Link>
       </nav>
 
       <Outlet />

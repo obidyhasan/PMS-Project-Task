@@ -4,6 +4,7 @@ import AttendanceReport from "@/Features/HumanResource/Pages/Attendance/Attendan
 import NewAward from "@/Features/HumanResource/Pages/Award/NewAward";
 import EmployeePerformance from "@/Features/HumanResource/Pages/Employee/EmployeePerformance";
 import ManageEmployeeSalary from "@/Features/HumanResource/Pages/Employee/ManageEmployeeSalary";
+import LeaveApplication from "@/Features/HumanResource/Pages/Leave/LeaveApplication";
 import { createBrowserRouter } from "react-router";
 
 export const router = createBrowserRouter([
@@ -30,6 +31,10 @@ export const router = createBrowserRouter([
       {
         path: "/new-award",
         Component: NewAward,
+      },
+      {
+        path: "/leave-application",
+        Component: LeaveApplication,
       },
     ],
   },

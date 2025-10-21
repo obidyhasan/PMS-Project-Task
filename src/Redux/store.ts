@@ -3,6 +3,7 @@ import employeePerformanceReducer from "../Features/HumanResource/featuresSlices
 import employeeSalaryReducer from "../Features/HumanResource/featuresSlices/Employee/employeeSalarySlice";
 import attendanceReducer from "../Features/HumanResource/featuresSlices/Attendance/attendanceListSlice";
 import awardReducer from "@/Features/HumanResource/featuresSlices/Award/awardListSlice";
+import leaveApplicationReducer from "@/Features/HumanResource/featuresSlices/Leave/leaveApplicationSlice";
 
 export const store = configureStore({
   reducer: {
@@ -10,6 +11,7 @@ export const store = configureStore({
     employeeSalary: employeeSalaryReducer,
     attendance: attendanceReducer,
     award: awardReducer,
+    leaveApplication: leaveApplicationReducer,
   },
 });
 

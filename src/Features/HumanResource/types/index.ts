@@ -41,3 +41,15 @@ export interface IAward {
   date: string;
   awardBy: string;
 }
+
+export interface ILeaveApplication {
+  id?: string;
+  name: string;
+  leaveType: string;
+  applicationStartDate: string;
+  applicationEndDate: string;
+  approveStartDate: string;
+  approvedEndDate: string;
+  applyDay: string;
+  approvedDay: string;
+}
