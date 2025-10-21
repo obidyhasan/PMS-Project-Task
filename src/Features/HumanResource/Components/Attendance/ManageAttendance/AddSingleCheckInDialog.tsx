@@ -54,7 +54,8 @@ const addSingleCheckInSchema = z.object({
 });
 
 const AddSingleCheckInDialog = () => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const dispatch = useDispatch();
   const today = new Date().toISOString().split("T")[0];
 
@@ -86,7 +87,7 @@ const AddSingleCheckInDialog = () => {
         })
       );
 
-      setIsOpen(false);
+      setIsDialogOpen(false);
       form.reset({ ...form.getValues(), date: today });
     } catch (error) {
       console.log(error);
@@ -94,7 +95,7 @@ const AddSingleCheckInDialog = () => {
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <DialogTrigger asChild>
         <Button className="bg-blue-600 hover:bg-blue-700 rounded-sm">
           Single Check In
@@ -194,8 +195,11 @@ const AddSingleCheckInDialog = () => {
                 name="date"
                 render={({ field }) => (
                   <FormItem className="flex flex-col">
-                    <FormLabel>Date</FormLabel>
-                    <Popover>
+                    <FormLabel className="pointer-events-none">Date</FormLabel>
+                    <Popover
+                      open={isCalendarOpen}
+                      onOpenChange={setIsCalendarOpen}
+                    >
                       <PopoverTrigger asChild>
                         <FormControl>
                           <Button
@@ -219,11 +223,12 @@ const AddSingleCheckInDialog = () => {
                           selected={
                             field.value ? new Date(field.value) : undefined
                           }
-                          onSelect={(date) =>
+                          onSelect={(date) => {
                             field.onChange(
                               date ? format(date, "yyyy-MM-dd") : ""
-                            )
-                          }
+                            );
+                            setIsCalendarOpen(false);
+                          }}
                           disabled={(date) => date > new Date()}
                           initialFocus
                         />
@@ -234,8 +239,8 @@ const AddSingleCheckInDialog = () => {
                 )}
               />
 
-              {/* Check In / Check Out */}
               <div className="grid grid-cols-2 gap-4">
+                {/* Check In */}
                 <FormField
                   control={form.control}
                   name="checkIn"
@@ -243,12 +248,21 @@ const AddSingleCheckInDialog = () => {
                     <FormItem>
                       <FormLabel>Check In</FormLabel>
                       <FormControl>
-                        <Input type="time" {...field} />
+                        <Input
+                          type="time"
+                          step="1"
+                          value={field.value || ""}
+                          onChange={field.onChange}
+                          id="check-in"
+                          className="bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
+
+                {/* Check Out */}
                 <FormField
                   control={form.control}
                   name="checkOut"
@@ -256,7 +270,14 @@ const AddSingleCheckInDialog = () => {
                     <FormItem>
                       <FormLabel>Check Out</FormLabel>
                       <FormControl>
-                        <Input type="time" {...field} />
+                        <Input
+                          type="time"
+                          step="1"
+                          value={field.value || ""}
+                          onChange={field.onChange}
+                          id="check-out"
+                          className="bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

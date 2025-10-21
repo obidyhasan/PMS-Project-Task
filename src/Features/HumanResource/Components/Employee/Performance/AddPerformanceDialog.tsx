@@ -56,7 +56,8 @@ const formSchema = z.object({
 });
 
 const AddPerformanceDialog = () => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const dispatch = useDispatch();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -80,7 +81,7 @@ const AddPerformanceDialog = () => {
           updatedBy: values.updatedBy || "Jane Doe (HR)",
         })
       );
-      setIsOpen(false);
+      setIsDialogOpen(false);
       form.reset();
     } catch (error) {
       console.log(error);
@@ -88,7 +89,7 @@ const AddPerformanceDialog = () => {
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <DialogTrigger asChild>
         <Button className="bg-blue-600 hover:bg-blue-700 rounded-sm">
           <IoAddOutline />
@@ -154,8 +155,13 @@ const AddPerformanceDialog = () => {
                   name="date"
                   render={({ field }) => (
                     <FormItem className="flex flex-col">
-                      <FormLabel>Date</FormLabel>
-                      <Popover>
+                      <FormLabel className="pointer-events-none">
+                        Date
+                      </FormLabel>
+                      <Popover
+                        open={isCalendarOpen}
+                        onOpenChange={setIsCalendarOpen}
+                      >
                         <PopoverTrigger asChild>
                           <FormControl>
                             <Button
@@ -179,11 +185,12 @@ const AddPerformanceDialog = () => {
                             selected={
                               field.value ? new Date(field.value) : undefined
                             }
-                            onSelect={(date) =>
+                            onSelect={(date) => {
                               field.onChange(
                                 date ? format(date, "yyyy-MM-dd") : ""
-                              )
-                            }
+                              );
+                              setIsCalendarOpen(false);
+                            }}
                             disabled={(date) => date > new Date()}
                             initialFocus
                           />
@@ -229,7 +236,9 @@ const AddPerformanceDialog = () => {
                 name="status"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Status</FormLabel>
+                    <FormLabel className="pointer-events-none">
+                      Status
+                    </FormLabel>
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}

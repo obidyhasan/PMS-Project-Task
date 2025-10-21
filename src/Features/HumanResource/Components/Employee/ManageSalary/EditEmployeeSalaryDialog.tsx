@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -66,6 +66,7 @@ export const EditEmployeeSalaryDialog = ({
   salary,
 }: EditSalaryDialogProps) => {
   const dispatch = useDispatch();
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 
   const form = useForm<z.infer<typeof manageSalarySchema>>({
     resolver: zodResolver(manageSalarySchema),
@@ -210,8 +211,11 @@ export const EditEmployeeSalaryDialog = ({
               name="date"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
-                  <FormLabel>Date</FormLabel>
-                  <Popover>
+                  <FormLabel className="pointer-events-none">Date</FormLabel>
+                  <Popover
+                    open={isCalendarOpen}
+                    onOpenChange={setIsCalendarOpen}
+                  >
                     <PopoverTrigger asChild>
                       <FormControl>
                         <Button
@@ -235,9 +239,12 @@ export const EditEmployeeSalaryDialog = ({
                         selected={
                           field.value ? new Date(field.value) : undefined
                         }
-                        onSelect={(date) =>
-                          field.onChange(date ? format(date, "yyyy-MM-dd") : "")
-                        }
+                        onSelect={(date) => {
+                          field.onChange(
+                            date ? format(date, "yyyy-MM-dd") : ""
+                          );
+                          setIsCalendarOpen(false);
+                        }}
                         disabled={(date) => date > new Date()}
                         initialFocus
                       />

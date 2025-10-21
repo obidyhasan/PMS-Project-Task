@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -68,6 +68,7 @@ export const EditAttendanceDialog = ({
   attendance,
 }: EditAttendanceDialogProps) => {
   const dispatch = useDispatch();
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const today = new Date().toISOString().split("T")[0];
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -213,8 +214,11 @@ export const EditAttendanceDialog = ({
               name="date"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
-                  <FormLabel>Date</FormLabel>
-                  <Popover>
+                  <FormLabel className="pointer-events-none">Date</FormLabel>
+                  <Popover
+                    open={isCalendarOpen}
+                    onOpenChange={setIsCalendarOpen}
+                  >
                     <PopoverTrigger asChild>
                       <FormControl>
                         <Button
@@ -238,9 +242,12 @@ export const EditAttendanceDialog = ({
                         selected={
                           field.value ? new Date(field.value) : undefined
                         }
-                        onSelect={(date) =>
-                          field.onChange(date ? format(date, "yyyy-MM-dd") : "")
-                        }
+                        onSelect={(date) => {
+                          field.onChange(
+                            date ? format(date, "yyyy-MM-dd") : ""
+                          );
+                          setIsCalendarOpen(false);
+                        }}
                         disabled={(date) => date > new Date()}
                         initialFocus
                       />
@@ -260,7 +267,13 @@ export const EditAttendanceDialog = ({
                   <FormItem>
                     <FormLabel>Check In</FormLabel>
                     <FormControl>
-                      <Input type="time" {...field} />
+                      <Input
+                        type="time"
+                        step="1"
+                        value={field.value || ""}
+                        onChange={field.onChange}
+                        className="bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -275,7 +288,13 @@ export const EditAttendanceDialog = ({
                   <FormItem>
                     <FormLabel>Check Out</FormLabel>
                     <FormControl>
-                      <Input type="time" {...field} />
+                      <Input
+                        type="time"
+                        step="1"
+                        value={field.value || ""}
+                        onChange={field.onChange}
+                        className="bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

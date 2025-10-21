@@ -21,6 +21,8 @@ import {
 import { sortByKey } from "@/Features/HumanResource/utils/attendance";
 import DeleteAttendanceDialog from "./DeleteAttendanceDialog";
 import EditAttendanceDialog from "./EditAttendanceDialog";
+import ShowEntries from "@/Features/HumanResource/utils/shared/ShowEntries";
+import Pagination from "@/Features/HumanResource/utils/shared/Pagination";
 
 interface AttendanceListTableProps {
   isManageEnable?: boolean;
@@ -61,11 +63,7 @@ const AttendanceListTable = ({
     <div>
       {/* Action Section */}
       <div className="my-5 flex items-center justify-between flex-wrap gap-3">
-        <div className="flex items-center gap-1 font-normal">
-          <p>Show</p>
-          <Input type="number" placeholder="10" className="max-w-16" />
-          <p>entries</p>
-        </div>
+        <ShowEntries />
         <div className="flex items-center gap-2 font-normal">
           <p>Search</p>
           <Input
@@ -96,7 +94,13 @@ const AttendanceListTable = ({
                     onClick={() => handleSort(col.key)}
                   >
                     {col.label}
-                    <ArrowDownUp className="text-muted-foreground w-4" />
+                    <ArrowDownUp
+                      className={`w-4 ${
+                        sortConfig.key === col.key
+                          ? "text-black"
+                          : "text-gray-300"
+                      }`}
+                    />
                   </div>
                 </TableHead>
               ))}
@@ -151,17 +155,7 @@ const AttendanceListTable = ({
       </div>
 
       {/* Pagination */}
-      <div className="flex items-center gap-2 justify-end flex-wrap my-5">
-        <Button variant="ghost" className="bg-muted hover:bg-gray-200">
-          Previous
-        </Button>
-        <Button size="icon" variant="outline">
-          1
-        </Button>
-        <Button variant="ghost" className="bg-muted hover:bg-gray-200">
-          Next
-        </Button>
-      </div>
+      <Pagination />
     </div>
   );
 };

@@ -1,4 +1,3 @@
-import * as React from "react";
 import {
   Dialog,
   DialogContent,
@@ -24,6 +23,7 @@ import {
 } from "@/components/ui/select";
 import type { Attendance } from "@/Features/HumanResource/types";
 import { format } from "date-fns";
+import { useState } from "react";
 
 interface Props {
   open: boolean;
@@ -40,11 +40,11 @@ export const AttendanceFilterDialog = ({
   attendanceList,
   onApply,
 }: Props) => {
-  const [selectedDate, setSelectedDate] = React.useState<Date | undefined>(
-    undefined
-  );
-  const [selectedEmployee, setSelectedEmployee] = React.useState<string>("");
-  const [selectedTime, setSelectedTime] = React.useState<string>("");
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
+  const [selectedEmployee, setSelectedEmployee] = useState<string>("");
+  const [selectedTime, setSelectedTime] = useState<string>("");
+  const [isDateCalendarOpen, setIsDateCalendarOpen] = useState(false);
+  const [isDateTimeCalendarOpen, setIsDateTimeCalendarOpen] = useState(false);
 
   const handleApply = () => {
     let filtered = attendanceList;
@@ -90,11 +90,15 @@ export const AttendanceFilterDialog = ({
         {filterType === "date" && (
           <div>
             <Label className="my-2">Date</Label>
-            <Popover>
+            <Popover
+              open={!!isDateCalendarOpen}
+              onOpenChange={setIsDateCalendarOpen}
+            >
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
                   className="w-full justify-between font-normal"
+                  onClick={() => setIsDateCalendarOpen(true)}
                 >
                   {selectedDate
                     ? format(selectedDate, "yyyy-MM-dd")
@@ -105,7 +109,10 @@ export const AttendanceFilterDialog = ({
                 <Calendar
                   mode="single"
                   selected={selectedDate}
-                  onSelect={(date) => setSelectedDate(date ?? undefined)}
+                  onSelect={(date) => {
+                    setSelectedDate(date ?? undefined);
+                    setIsDateCalendarOpen(false);
+                  }}
                 />
               </PopoverContent>
             </Popover>
@@ -115,7 +122,7 @@ export const AttendanceFilterDialog = ({
         {/* EMPLOYEE FILTER */}
         {filterType === "employee" && (
           <div>
-            <Label className="my-2">Select Employee ID</Label>
+            <Label className="my-2">Employee ID</Label>
             <Select
               value={selectedEmployee}
               onValueChange={setSelectedEmployee}
@@ -136,35 +143,49 @@ export const AttendanceFilterDialog = ({
 
         {/* DATE + TIME FILTER */}
         {filterType === "dateTime" && (
-          <div className="mt-4 space-y-4">
-            <Label>Date</Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="w-full justify-between font-normal"
-                >
-                  {selectedDate
-                    ? format(selectedDate, "yyyy-MM-dd")
-                    : "Select date"}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={selectedDate}
-                  onSelect={(date) => setSelectedDate(date ?? undefined)}
-                />
-              </PopoverContent>
-            </Popover>
+          <div className="mt-2 space-y-4">
+            <div className="space-y-2">
+              <Label>Date</Label>
+              <Popover
+                open={isDateTimeCalendarOpen}
+                onOpenChange={setIsDateTimeCalendarOpen}
+              >
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="w-full justify-between font-normal"
+                    onClick={() => setIsDateTimeCalendarOpen(true)}
+                  >
+                    {selectedDate
+                      ? format(selectedDate, "yyyy-MM-dd")
+                      : "Select date"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={selectedDate}
+                    onSelect={(date) => {
+                      setSelectedDate(date ?? undefined);
+                      setIsDateTimeCalendarOpen(false);
+                    }}
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
 
-            <Label>Check-In Time</Label>
-            <Input
-              type="time"
-              placeholder="Select Check-In Time"
-              value={selectedTime}
-              onChange={(e) => setSelectedTime(e.target.value)}
-            />
+            <div className="space-y-2">
+              <Label>Check-In Time</Label>
+              <Input
+                type="time"
+                placeholder="Select Check-In Time"
+                value={selectedTime}
+                onChange={(e) => setSelectedTime(e.target.value)}
+                className="bg-background appearance-none 
+               [&::-webkit-calendar-picker-indicator]:hidden 
+               [&::-webkit-calendar-picker-indicator]:appearance-none"
+              />
+            </div>
           </div>
         )}
 
