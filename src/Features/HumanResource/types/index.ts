@@ -32,3 +32,12 @@ export interface Attendance {
   checkOut?: string;
   stay?: string;
 }
+export interface IAward {
+  id?: string;
+  award: string;
+  description: string;
+  giftItem: string;
+  employeeName: string;
+  date: string;
+  awardBy: string;
+}

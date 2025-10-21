@@ -10,6 +10,7 @@ function App() {
         <Link to={"/manage-employee"}>Manage Employee Salary</Link>
         <Link to={"/attendance"}>Attendance</Link>
         <Link to={"/attendance-report"}>Attendance Reports</Link>
+        <Link to={"/new-award"}>New Award</Link>
       </nav>
 
       <Outlet />

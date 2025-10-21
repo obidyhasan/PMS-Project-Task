@@ -8,7 +8,7 @@ import {
 
 const ShowEntries = () => {
   return (
-    <div className="flex items-center gap-1 font-normal">
+    <div className="flex items-center gap-2 font-normal">
       <p>Show</p>
       <Select defaultValue="10">
         <SelectTrigger className="w-[80px]">
