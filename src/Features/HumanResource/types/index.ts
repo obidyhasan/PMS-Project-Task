@@ -53,3 +53,22 @@ export interface ILeaveApplication {
   applyDay: string;
   approvedDay: string;
 }
+
+export interface IWeeklyHoliday {
+  id?: string;
+  day: string;
+}
+
+export interface IHoliday {
+  id?: string;
+  holidayName: string;
+  fromDate: string;
+  toDate: string;
+  numberOfDays: string;
+}
+
+export interface ILeaveType {
+  id?: string;
+  leaveType: string;
+  leaveDays: string;
+}
